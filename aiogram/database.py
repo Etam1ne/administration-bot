@@ -11,12 +11,12 @@ mydb = mysql.connector.connect(
     database = os.getenv('DB_NAME')
 )
 
-async def signIn(username: str, password: str) -> bool:
+async def sign_in(username: str, password: str) -> bool:
     try:
         mycursor = mydb.cursor()
         mycursor.execute('SELECT password FROM users WHERE username = SHA1(%s)', (username,))
         myresult = mycursor.fetchone()
-        if (len(myresult) == 0): return False
+        if (myresult is None): return False
         dbPassword = myresult[0].decode()
         inputPassword = hashlib.sha1(password.encode("utf-8")).hexdigest()
         if (dbPassword == inputPassword): return True
@@ -27,7 +27,7 @@ async def signIn(username: str, password: str) -> bool:
         print(f'An error occured: {error}')
         return False
 
-async def signUp(username: str, password: str) -> bool: 
+async def sign_up(username: str, password: str) -> bool: 
     try:
         mycursor = mydb.cursor()
         mycursor.execute('INSERT INTO users (username, password) VALUES (SHA1(%s), SHA1(%s))', (username, password))
